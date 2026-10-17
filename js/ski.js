@@ -436,11 +436,11 @@ function init() {
     );
   }
   const texNieve = textureLoader.load(
-    'images/Snow008A_1k-JPG_Color.jpg',
+    'images/Snow008A_1K-JPG_Color.jpg',
     undefined,
     undefined,
     function() {
-      suelo.material.map = textureLoader.load('Snow008A_1k-JPG_Color.jpg');
+      suelo.material.map = textureLoader.load('Snow008A_1K-JPG_Color.jpg');
       suelo.material.needsUpdate = true;
     }
   );
