@@ -501,6 +501,7 @@ fbxLoader.load('models/Catwalk Idle 01.fbx', (object) => {
   cargarAnimacion(fbxLoader, 'models/Jump.fbx', 'salto', false);
   cargarAnimacion(fbxLoader, 'models/groin.fbx', 'agachado');
   cargarAnimacion(fbxLoader, 'models/Jumping.fbx', 'salto_extremo', false);
+  cargarAnimacion(fbxLoader, 'models/falling_idle.fbx', 'caida_libre', true);
   cargarAnimacion(fbxLoader, 'models/Landing.fbx', 'aterrizaje_rampa', false);
   cargarAnimacion(fbxLoader, 'models/knock-down.fbx', 'caida', false);
   });
@@ -762,8 +763,11 @@ function update() {
     jugador.rotation.y = angulo_curva;
 
     var inclinacion_objetivo = 0;
-    if (delta_x > 0.1) inclinacion_objetivo = -inclinacion_maxima;
-    else if (delta_x < -0.1) inclinacion_objetivo = inclinacion_maxima;
+    
+    var limite_inclinacion = agachado ? inclinacion_maxima * 0.10 : inclinacion_maxima;
+
+    if (delta_x > 0.1) inclinacion_objetivo = -limite_inclinacion;
+    else if (delta_x < -0.1) inclinacion_objetivo = limite_inclinacion;
     
     var factor_inclinacion = 1 - Math.exp(-rapidez_inclinacion * delta);
     inclinacion_actual += (inclinacion_objetivo - inclinacion_actual) * factor_inclinacion;
@@ -806,12 +810,14 @@ function update() {
       var modeloVisual = jugador.children[0];
       modeloVisual.scale.y = 0.02 / escala_y_actual; 
       modeloVisual.position.y = -escala_y_actual + 0.15; 
-      if ((!en_suelo && en_salto_rampa) || timer_aterrizaje > 0) {
+      
+      // Solo forzamos los 90 grados si la pirueta ('salto_extremo') se está reproduciendo
+      if (accionActual === animaciones['salto_extremo']) {
           modeloVisual.rotation.y = +Math.PI / 2; 
       } else if (agachado) {
-          modeloVisual.rotation.y = THREE.MathUtils.degToRad(20);
+          modeloVisual.rotation.y = THREE.MathUtils.degToRad(25);
       } else {
-          modeloVisual.rotation.y = 0;
+          modeloVisual.rotation.y = 0; // Vuelve a postura recta para 'caida_libre' y 'aterrizaje'
       }
   }
   if (timer_aterrizaje > 0) {
@@ -821,7 +827,20 @@ function update() {
     if (en_animacion_muerte) {
     } else if (!en_suelo) {
       if (en_salto_rampa) {
-        cambiarAnimacion('salto_extremo', 0.2);
+        
+        // Si está cayendo y se acerca al suelo (ej. altura < 3.5), anticipamos el aterrizaje
+        if (pos_jugador.y < 3.5 && velocidad_vertical < 0) {
+            cambiarAnimacion('aterrizaje_rampa', 0.2);
+        } else {
+            var animSaltoExtremo = animaciones['salto_extremo'];
+            // Si la pirueta termina, pasamos a la nueva animación de caída libre
+            if (animSaltoExtremo && animSaltoExtremo.time >= animSaltoExtremo.getClip().duration - 0.1) {
+                cambiarAnimacion('caida_libre', 0.2);
+            } else {
+                cambiarAnimacion('salto_extremo', 0.2);
+            }
+        }
+        
       } else {
         cambiarAnimacion('salto', 0.2);
       }
