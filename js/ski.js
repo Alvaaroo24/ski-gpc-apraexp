@@ -126,6 +126,7 @@ document.addEventListener('keydown', (event) => {
           if (carrilActual > 0) {
             carrilActual--;
             if (en_suelo) agachado = false; 
+            timer_aterrizaje = 0;
           }
           break;
         case 'ArrowRight':
@@ -134,21 +135,24 @@ document.addEventListener('keydown', (event) => {
           if (carrilActual < 2) {
             carrilActual++;
             if (en_suelo) agachado = false; 
+            timer_aterrizaje = 0;
           }
           break;
         case 'ArrowDown':
-    case 'KeyS':
-      if (en_suelo) {
-        agachado = true;
-      }
-      break;
-    case 'Space':
-    case 'ArrowUp':
-    case 'KeyW':
-      event.preventDefault(); 
-      agachado = false;
-      buffer_salto = DURACION_BUFFER;
-      break;
+        case 'KeyS':
+          if (en_suelo) {
+            agachado = true;
+            timer_aterrizaje = 0;
+          }
+          break;
+        case 'Space':
+        case 'ArrowUp':
+        case 'KeyW':
+          event.preventDefault(); 
+          agachado = false;
+          buffer_salto = DURACION_BUFFER;
+          timer_aterrizaje = 0;
+          break;
   }});
 
 document.addEventListener('keyup', (event) => {
@@ -500,7 +504,6 @@ fbxLoader.load('models/Catwalk Idle 01.fbx', (object) => {
   }
   cargarAnimacion(fbxLoader, 'models/Jump.fbx', 'salto', false);
   cargarAnimacion(fbxLoader, 'models/groin.fbx', 'agachado');
-  cargarAnimacion(fbxLoader, 'models/Jumping.fbx', 'salto_extremo', false);
   cargarAnimacion(fbxLoader, 'models/falling_idle.fbx', 'caida_libre', true);
   cargarAnimacion(fbxLoader, 'models/Landing.fbx', 'aterrizaje_rampa', false);
   cargarAnimacion(fbxLoader, 'models/knock-down.fbx', 'caida', false);
@@ -811,13 +814,11 @@ function update() {
       modeloVisual.scale.y = 0.02 / escala_y_actual; 
       modeloVisual.position.y = -escala_y_actual + 0.15; 
       
-      // Solo forzamos los 90 grados si la pirueta ('salto_extremo') se está reproduciendo
-      if (accionActual === animaciones['salto_extremo']) {
-          modeloVisual.rotation.y = +Math.PI / 2; 
-      } else if (agachado) {
+
+      if (agachado) {
           modeloVisual.rotation.y = THREE.MathUtils.degToRad(25);
       } else {
-          modeloVisual.rotation.y = 0; // Vuelve a postura recta para 'caida_libre' y 'aterrizaje'
+          modeloVisual.rotation.y = 0;
       }
   }
   if (timer_aterrizaje > 0) {
@@ -828,17 +829,12 @@ function update() {
     } else if (!en_suelo) {
       if (en_salto_rampa) {
         
-        // Si está cayendo y se acerca al suelo (ej. altura < 3.5), anticipamos el aterrizaje
+
         if (pos_jugador.y < 3.5 && velocidad_vertical < 0) {
             cambiarAnimacion('aterrizaje_rampa', 0.2);
         } else {
-            var animSaltoExtremo = animaciones['salto_extremo'];
-            // Si la pirueta termina, pasamos a la nueva animación de caída libre
-            if (animSaltoExtremo && animSaltoExtremo.time >= animSaltoExtremo.getClip().duration - 0.1) {
-                cambiarAnimacion('caida_libre', 0.2);
-            } else {
-                cambiarAnimacion('salto_extremo', 0.2);
-            }
+
+            cambiarAnimacion('caida_libre', 0.2);
         }
         
       } else {
