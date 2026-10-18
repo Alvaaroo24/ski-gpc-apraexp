@@ -17,6 +17,7 @@ function curvaPista(z) {
   let curvaBase = Math.sin(z * 0.012) * 14 + Math.sin(z * 0.028) * 7 + Math.cos(z * 0.006) * 4;
   return curvaBase * Math.min(factorDificultad, 1.6);
 }
+
 function crearTexturaPosteSlalom(colorFranja) {
   const canvas = document.createElement('canvas');
   canvas.width = 64;
@@ -35,6 +36,7 @@ function crearTexturaPosteSlalom(colorFranja) {
   texture.repeat.set(1, 2);
   return texture;
 }
+
 let velocidad_avance = 20; 
 const velocidad_maxima = 45; 
 const rapidez_cambio_carril = 22;
@@ -65,7 +67,6 @@ var geoBonus = new THREE.OctahedronGeometry(0.8);
 var matBonus; 
 var matInvisible = new THREE.MeshBasicMaterial({ visible: false });
 
-
 var geoPoste = new THREE.CylinderGeometry(0.2, 0.2, 5, 8);
 var matPoste; 
 var geoRampa = new THREE.BoxGeometry(2.5, 1.2, 8);
@@ -83,6 +84,7 @@ const geoLineaDivisoria = new THREE.BoxGeometry(0.2, 0.02, paso_linea);
 const geoLineaBorde = new THREE.BoxGeometry(0.35, 0.02, paso_linea);
 const matLineaRoja = new THREE.MeshBasicMaterial({ color: 0xee1122 });
 const perfilGrada = new THREE.Shape();
+
 perfilGrada.moveTo(0, 0);
 perfilGrada.lineTo(0, 5);
 perfilGrada.lineTo(1.5, 5);
@@ -92,17 +94,20 @@ perfilGrada.lineTo(3, 2);
 perfilGrada.lineTo(4.5, 2);
 perfilGrada.lineTo(4.5, 0);
 perfilGrada.closePath();
+
 const geoGrada = new THREE.ExtrudeGeometry(perfilGrada, {
   depth: 3.0, 
   steps: 1,
   bevelEnabled: false
 });
+
 geoGrada.center();
 const matGradaGrisMetalico = new THREE.MeshStandardMaterial({ 
   color: 0x888888,
   metalness: 0.85,
   roughness: 0.35
 });
+
 var juego_activo = false;
 var juego_iniciado = false;
 var en_animacion_muerte = false;
@@ -117,6 +122,7 @@ var menuElement = null;
 var btnIniciar = null;
 var textoMenu = null;
 var textoRecord = null;
+
 document.addEventListener('keydown', (event) => {
     if (!juego_activo || en_animacion_muerte) return;
     switch (event.code) {
@@ -221,7 +227,6 @@ function initUI() {
   textoRecord.innerHTML = `Mejor Puntuación: ${Math.floor(mejor_puntuacion)}`;
   menuElement.appendChild(textoRecord);
 
-  // --- NUEVO CÓDIGO: Panel de controles ---
   const textoControles = document.createElement('div');
   textoControles.style.marginBottom = '30px';
   textoControles.style.textAlign = 'center';
@@ -237,7 +242,6 @@ function initUI() {
     <p style="margin: 8px 0;"><b>Espacio / ↑ / W</b> : Saltar</p>
   `;
   menuElement.appendChild(textoControles);
-  // --- FIN NUEVO CÓDIGO ---
 
   btnIniciar = document.createElement('button');
   btnIniciar.innerHTML = 'ESPERANDO...';
@@ -273,6 +277,7 @@ function iniciarPartida() {
   velocidad_avance = 20;
   z_generacion = 0;
   ultimoCarrilLibre = 1;
+
   for (let i = 0; i < objetosPista.length; i++) {
     scene.remove(objetosPista[i].mesh);
   }
@@ -364,8 +369,10 @@ function init() {
   renderer.setClearColor(new THREE.Color(colorNiebla));
 
   camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+
   const ambientLight = new THREE.AmbientLight(0x404040, 0.7); 
   scene.add(ambientLight);
+
   const directionalLight = new THREE.DirectionalLight(0xffeedd, 1.2);
   directionalLight.position.set(100, 200, 100);
   directionalLight.castShadow = true;
@@ -376,6 +383,7 @@ function init() {
   directionalLight.shadow.camera.top = 100;
   directionalLight.shadow.camera.bottom = -100;
   scene.add(directionalLight);
+
   focoJugador = new THREE.SpotLight(0xffffff, 1.0);
   focoJugador.position.set(0, 10, 0); 
   focoJugador.angle = Math.PI / 5;
@@ -386,6 +394,7 @@ function init() {
   focoJugador.shadow.mapSize.height = 1024;
   scene.add(focoJugador);
   scene.add(focoJugador.target);
+
   const manager = new THREE.LoadingManager();
   
   manager.onLoad = function () {
@@ -417,13 +426,17 @@ function init() {
       matTronco.needsUpdate = true;
     }
   );
+
   const texPlasticoRoughness = textureLoader.load('images/Plastic008_1K-JPG_Roughness.jpg');
+
   const texPlasticoNormal = textureLoader.load('images/Plastic008_1K-JPG_NormalGL.jpg');
+
   texPlasticoRoughness.wrapS = texPlasticoRoughness.wrapT = THREE.RepeatWrapping;
   texPlasticoNormal.wrapS = texPlasticoNormal.wrapT = THREE.RepeatWrapping;
   texPlasticoRoughness.repeat.set(1, 4);
   texPlasticoNormal.repeat.set(1, 4);
   const texPoste = crearTexturaPosteSlalom('#0055ff');
+
   matPoste = new THREE.MeshStandardMaterial({ 
     map: texPoste,
     roughnessMap: texPlasticoRoughness,
@@ -431,9 +444,11 @@ function init() {
     roughness: 0.3,
     metalness: 0.1
   });
+
   matRoca = new THREE.MeshLambertMaterial({ map: texRoca, color: 0xaaaaaa }); 
   matTronco = new THREE.MeshPhongMaterial({ map: texTronco, specular: 0x333333, shininess: 20 }); 
   matBonus = new THREE.MeshPhongMaterial({ color: 0xFFD700, shininess: 90 });
+
   const rgbeLoader = (typeof THREE.RGBELoader !== 'undefined') 
     ? new THREE.RGBELoader(manager) 
     : (typeof RGBELoader !== 'undefined' ? new RGBELoader(manager) : null);
@@ -457,6 +472,7 @@ function init() {
       }
     );
   }
+
   const texNieve = textureLoader.load(
     'images/Snow008A_1K-JPG_Color.jpg',
     undefined,
@@ -476,6 +492,7 @@ function init() {
     roughness: 0.9,
     metalness: 0.05
   });
+
   suelo = new THREE.Mesh(new THREE.PlaneGeometry(2000, 2000), materialSuelo); 
   suelo.rotation.x = -Math.PI / 2;
   suelo.receiveShadow = true; 
@@ -483,7 +500,8 @@ function init() {
   jugador = new THREE.Group();
   scene.add(jugador);
   const fbxLoader = new THREE.FBXLoader(manager);
-fbxLoader.load('models/Catwalk Idle 01.fbx', (object) => {
+
+  fbxLoader.load('models/Catwalk Idle 01.fbx', (object) => {
   object.scale.set(0.02, 0.02, 0.02);    
   object.position.y = -0.85; 
   object.traverse(function (child) {
@@ -520,12 +538,14 @@ fbxLoader.load('models/Catwalk Idle 01.fbx', (object) => {
       accionActual = action;
       accionActual.play();
   }
+
   cargarAnimacion(fbxLoader, 'models/Jump.fbx', 'salto', false);
   cargarAnimacion(fbxLoader, 'models/groin.fbx', 'agachado');
   cargarAnimacion(fbxLoader, 'models/falling_idle.fbx', 'caida_libre', true);
   cargarAnimacion(fbxLoader, 'models/Landing.fbx', 'aterrizaje_rampa', false);
   cargarAnimacion(fbxLoader, 'models/knock-down.fbx', 'caida', false);
   });
+
   window.addEventListener('resize', onWindowResize);
   initUI();
   updateGestorPista();
@@ -548,6 +568,7 @@ function updateCamera(delta) {
   camera.fov += (fov_objetivo - camera.fov) * 8 * delta;
   camera.updateProjectionMatrix();
 }
+
 function generarTramo(z) {
   const carrilesLineas = [-6, -2, 2, 6];
 
@@ -575,12 +596,15 @@ function generarTramo(z) {
       objetosPista.push({ mesh: lineaMesh, tipo: 'linea' });
     }
     let índiceTramo = Math.round(Math.abs(z1) / paso_linea);
+
     if (índiceTramo % 2 === 0) {
+
       for (let i = 0; i < 5; i++) {
         let zSub = z1 - (i * 3.2); 
         let xSub = curvaPista(zSub);
         let xAdelante = curvaPista(zSub - 2);
         let anguloSub = Math.atan2(xAdelante - xSub, -2);
+
         let gradaIzq = new THREE.Mesh(geoGrada, matGradaGrisMetalico);
         gradaIzq.position.set(xSub - 22, 2.5, zSub);
         gradaIzq.rotation.y = anguloSub + Math.PI;
@@ -588,6 +612,7 @@ function generarTramo(z) {
         gradaIzq.receiveShadow = true;
         scene.add(gradaIzq);
         objetosPista.push({ mesh: gradaIzq, tipo: 'visual' });
+
         let gradaDer = new THREE.Mesh(geoGrada, matGradaGrisMetalico);
         gradaDer.position.set(xSub + 22, 2.5, zSub);
         gradaDer.rotation.y = anguloSub;
@@ -598,6 +623,7 @@ function generarTramo(z) {
       }
     }
   }
+
   if (z <= -40) {
     var rand = Math.random();
     var tipo = rand < 0.4 ? 0 : (rand < 0.65 ? 1 : (rand < 0.90 ? 2 : 3)); 
@@ -619,6 +645,7 @@ function generarTramo(z) {
       posteIzq.castShadow = true;
       posteIzq.receiveShadow = true;
       scene.add(posteIzq);
+
       objetosPista.push({ mesh: posteIzq, tipo: 'visual' });
 
       var posteDer = new THREE.Mesh(geoPoste, matPoste);
@@ -626,6 +653,7 @@ function generarTramo(z) {
       posteDer.castShadow = true;
       posteDer.receiveShadow = true;
       scene.add(posteDer);
+
       objetosPista.push({ mesh: posteDer, tipo: 'visual' });
 
       for (var i = 0; i < 3; i++) {
@@ -655,6 +683,7 @@ function generarTramo(z) {
         roca.castShadow = true;
         roca.receiveShadow = true;
         scene.add(roca);
+
         objetosPista.push({ mesh: roca, tipo: 'obstaculo' });
         objectsToCheck.push(roca);
         if (Math.random() < 0.10) {
@@ -675,6 +704,7 @@ function generarTramo(z) {
           rampa.castShadow = true;
           rampa.receiveShadow = true;
           scene.add(rampa);
+
           objetosPista.push({ mesh: rampa, tipo: 'rampa' });
           objectsToCheck.push(rampa);
         }
@@ -694,6 +724,7 @@ function generarTramo(z) {
         [carrilesDisponibles[i], carrilesDisponibles[j]] = [carrilesDisponibles[j], carrilesDisponibles[i]];
       }
       let carrilesOcupables = carrilesDisponibles.slice(0, numTroncos);
+
       for (let j = 0; j < carrilesOcupables.length; j++) {
         let carrilActualTronco = carrilesOcupables[j];
         
@@ -704,6 +735,7 @@ function generarTramo(z) {
         tronco.castShadow = true;
         tronco.receiveShadow = true;
         scene.add(tronco);
+
         objetosPista.push({ mesh: tronco, tipo: 'obstaculo' });
         objectsToCheck.push(tronco);
       }
@@ -713,11 +745,13 @@ function generarTramo(z) {
       bonusHitbox.position.set(xCentro + CARRILES[carrilLibre], 1.5, z);
       bonusHitbox.userData = { tipo: 'bonus' };
       scene.add(bonusHitbox);
+
       var bonusVisual = new THREE.Mesh(geoBonus, matBonus);
       bonusVisual.position.set(0, 0, 0); 
       bonusVisual.castShadow = true;
       bonusVisual.receiveShadow = true;
       bonusHitbox.add(bonusVisual);
+
       objetosPista.push({ mesh: bonusHitbox, tipo: 'bonus' });
       objectsToCheck.push(bonusHitbox);
     }
@@ -729,6 +763,7 @@ function updateGestorPista() {
     generarTramo(z_generacion);
     z_generacion -= separacion_filas;
   }
+
   for (var i = objetosPista.length - 1; i >= 0; i--) {
     var obj = objetosPista[i];
     if (obj.mesh.position.z > pos_jugador.z + 30) {
@@ -746,6 +781,7 @@ function updateGestorPista() {
       visual.rotation.y += 0.05;
       visual.rotation.x += 0.02;
     } 
+
     else if (tipo === 'bonus' && obj.userData.tipo === 'consumiendo' && obj.children.length > 0) {
       let visual = obj.children[0];
       visual.position.y += 0.3;
@@ -824,14 +860,15 @@ function update() {
 
   var escala_objetivo = agachado ? 0.5 : 1.0;
   var factor_escala = 1 - Math.exp(-rapidez_agachado * delta);
+
   escala_y_actual += (escala_objetivo - escala_y_actual) * factor_escala;
   jugador.scale.y = escala_y_actual;
   jugador.position.set(pos_jugador.x, pos_jugador.y + escala_y_actual, pos_jugador.z);
+
   if (jugador.children.length > 0) {
       var modeloVisual = jugador.children[0];
       modeloVisual.scale.y = 0.02 / escala_y_actual; 
-      modeloVisual.position.y = -escala_y_actual + 0.15; 
-      
+      modeloVisual.position.y = -escala_y_actual + 0.15;       
 
       if (agachado) {
           modeloVisual.rotation.y = THREE.MathUtils.degToRad(25);
@@ -842,19 +879,16 @@ function update() {
   if (timer_aterrizaje > 0) {
       timer_aterrizaje -= delta;
   }
+
   if (mixer) {
     if (en_animacion_muerte) {
     } else if (!en_suelo) {
       if (en_salto_rampa) {
-        
-
         if (pos_jugador.y < 3.5 && velocidad_vertical < 0) {
             cambiarAnimacion('aterrizaje_rampa', 0.2);
         } else {
-
             cambiarAnimacion('caida_libre', 0.2);
         }
-        
       } else {
         cambiarAnimacion('salto', 0.2);
       }
@@ -879,11 +913,14 @@ function update() {
   focoJugador.position.set(pos_jugador.x, pos_jugador.y + 10, pos_jugador.z + 5);
   focoJugador.target.position.set(x_adelante, 0, pos_jugador.z - 40);
   var origenRayo = pos_jugador.clone();
+  
   origenRayo.y += 0.3; 
+  
   var direccionRayo = new THREE.Vector3(x_adelante - pos_jugador.x, 0, -2).normalize();
   raycaster.set(origenRayo, direccionRayo);
 
   var intersects = raycaster.intersectObjects(objectsToCheck, true);
+  
   if (!en_animacion_muerte && intersects.length > 0 && intersects[0].distance <= (velocidad_actual * delta + 1.2)) {
     var objHit = intersects[0].object;
     var tipoCol = objHit.userData.tipo;
