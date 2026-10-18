@@ -221,6 +221,24 @@ function initUI() {
   textoRecord.innerHTML = `Mejor Puntuación: ${Math.floor(mejor_puntuacion)}`;
   menuElement.appendChild(textoRecord);
 
+  // --- NUEVO CÓDIGO: Panel de controles ---
+  const textoControles = document.createElement('div');
+  textoControles.style.marginBottom = '30px';
+  textoControles.style.textAlign = 'center';
+  textoControles.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  textoControles.style.padding = '15px 30px';
+  textoControles.style.borderRadius = '10px';
+  textoControles.style.border = '1px solid #555';
+  
+  textoControles.innerHTML = `
+    <h3 style="color: #FFD700; margin-top: 0; margin-bottom: 15px;">CONTROLES</h3>
+    <p style="margin: 8px 0;"><b>← / A</b> y <b>→ / D</b> : Moverse a los lados</p>
+    <p style="margin: 8px 0;"><b>↓ / S</b> : Agacharse (Aumenta la velocidad)</p>
+    <p style="margin: 8px 0;"><b>Espacio / ↑ / W</b> : Saltar</p>
+  `;
+  menuElement.appendChild(textoControles);
+  // --- FIN NUEVO CÓDIGO ---
+
   btnIniciar = document.createElement('button');
   btnIniciar.innerHTML = 'ESPERANDO...';
   btnIniciar.style.padding = '15px 30px';
