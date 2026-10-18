@@ -1,4 +1,5 @@
 var renderer, scene, camera;
+var directionalLight;
 var clock = new THREE.Clock();
 
 const CARRILES = [-4, 0, 4]; 
@@ -373,7 +374,7 @@ function init() {
   const ambientLight = new THREE.AmbientLight(0x404040, 0.7); 
   scene.add(ambientLight);
 
-  const directionalLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+  directionalLight = new THREE.DirectionalLight(0xffeedd, 1.2);
   directionalLight.position.set(100, 200, 100);
   directionalLight.castShadow = true;
   directionalLight.shadow.mapSize.width = 2048;
@@ -383,6 +384,7 @@ function init() {
   directionalLight.shadow.camera.top = 100;
   directionalLight.shadow.camera.bottom = -100;
   scene.add(directionalLight);
+  scene.add(directionalLight.target);
 
   focoJugador = new THREE.SpotLight(0xffffff, 1.0);
   focoJugador.position.set(0, 10, 0); 
@@ -912,6 +914,9 @@ function update() {
 
   focoJugador.position.set(pos_jugador.x, pos_jugador.y + 10, pos_jugador.z + 5);
   focoJugador.target.position.set(x_adelante, 0, pos_jugador.z - 40);
+
+  directionalLight.position.set(pos_jugador.x + 100, pos_jugador.y + 200, pos_jugador.z + 100);
+  directionalLight.target.position.copy(pos_jugador);
   var origenRayo = pos_jugador.clone();
   
   origenRayo.y += 0.3; 
