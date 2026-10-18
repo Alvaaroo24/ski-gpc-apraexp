@@ -38,7 +38,7 @@ function crearTexturaPosteSlalom(colorFranja) {
 }
 
 let velocidad_avance = 20; 
-const velocidad_maxima = 45; 
+const velocidad_maxima = 35; 
 const rapidez_cambio_carril = 22;
 
 var en_salto_rampa = false; 
